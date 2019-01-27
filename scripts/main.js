@@ -29,6 +29,12 @@ function initAudio(element) {
     showDuration();
 }
 
+function pauseIt() {
+    audio.pause();
+    $('#pause').hide();
+    $('#play').show();
+}
+
 //play button
 $('#play').click(function () {
     audio.play();
@@ -37,43 +43,39 @@ $('#play').click(function () {
     showDuration();
 });
 
+//pause button
+$('#pause').click(function () {
+    pauseIt();
+});
+
 //stop button
 $('#stop').click(function () {
-    audio.pause();
     audio.currentTime = 0;
-    $('#pause').hide();
-    $('#play').show();
+    pauseIt();
 });
 
 //next button
 $('#next').click(function () {
-    audio.pause();
     audio.currentTime = 0;
-    $('#pause').show();
-    $('#play').hide();
+    pauseIt();
 
     var next = $('#playlist li.active').next();
     if (next.length == 0) {
         next = $('#playlist li:first-child');
     }
-
     initAudio(next);
     audio.play();
     showDuration();
-
 });
 
 //previous button
 $('#previous').click(function () {
-    audio.pause();
     audio.currentTime = 0;
-    $('#play').hide();
-    $('#pause').show();
+    pauseIt();
 
     var previous = $('#playlist li.active').prev();
     if (previous.length == 0) {
         previous = $('#playlist li:last-child');
-
     }
     initAudio(previous);
     audio.play();
@@ -81,7 +83,7 @@ $('#previous').click(function () {
 
 });
 
-//click on song to play
+//click on media title to play
 $('#playlist li').click(function () {
     audio.pause();
     initAudio($(this));
@@ -89,17 +91,7 @@ $('#playlist li').click(function () {
     $('#pause').show();
     audio.play();
     showDuration();
-})
-
-
-//pause button
-$('#pause').click(function () {
-    audio.pause();
-    $('#pause').hide();
-    $('#play').show();
 });
-
-
 
 //duration timer and progress indicator
 function showDuration() {
@@ -120,19 +112,15 @@ function showDuration() {
     });
 
     function formatTime(seconds) {
-        var seconds = Math.round(seconds);
+        var seconds = Math.round(Math.floor(seconds % 60));
         var minutes = Math.floor(seconds / 60);
-        //remaining seconds
-        seconds = Math.floor(seconds % 60);
-        //add leading zeroes
         minutes = (minutes >= 10) ? minutes : "0" + minutes;
         seconds = (seconds >= 10) ? seconds : "0" + seconds;
         return minutes + ":" + seconds;
     }
 }
 
-
-//load progress indicator only
+//load progress indicator 
 $(audio).bind("loadeddata progress canplaythrough playing", function () {
     updateLoadProgress();
 });
